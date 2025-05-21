@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Produto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 320px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: border 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #74ebd5;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #74ebd5;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #56c5ba;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Cadastrar Produto</h2>
+    <form id="produto-form">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required>
+
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" step="0.01" required>
+
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" required>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <div id="mensagem"></div>
+</div>
+
+<script>
+    document.getElementById('produto-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const data = {
+            nome: document.getElementById('nome').value,
+            preco: parseFloat(document.getElementById('preco').value),
+            quantidade: parseInt(document.getElementById('quantidade').value)
+        };
+
+        fetch('/mercado', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('mensagem').textContent = 'Produto cadastrado com sucesso!';
+                // ✅ Limpar os campos
+                document.getElementById('nome').value = '';
+                document.getElementById('preco').value = '';
+                document.getElementById('quantidade').value = '';
+            } else {
+                return response.json().then(err => {
+                    document.getElementById('mensagem').textContent = 'Erro: ' + JSON.stringify(err);
+                });
+            }
+        })
+        .catch(error => {
+            document.getElementById('mensagem').textContent = 'Erro de conexão.';
+        });
+    });
+</script>
+
+</body>
+</html>
