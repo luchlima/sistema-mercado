@@ -58,6 +58,7 @@ Para fazer as requisições HTTP abaixo, deverá visualizar pela documentação 
 ```
 [
   {
+    "id": 1,
     "nome": "Arroz Integral",
     "preco": 10.99,
     "quantidade": 3
@@ -67,5 +68,5 @@ Para fazer as requisições HTTP abaixo, deverá visualizar pela documentação 
 
 - Remover Tarefa (DELETE)
 ```
-    Digitar apenas o ID da tarefa.
+    Digitar apenas o ID do item.
 ```
