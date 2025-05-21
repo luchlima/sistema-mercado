@@ -58,6 +58,7 @@ Para fazer as requisições HTTP abaixo, deverá visualizar pela documentação 
 ```
 [
   {
+    "id": 1,
     "nome": "Arroz Integral",
     "preco": 10.99,
     "quantidade": 3
