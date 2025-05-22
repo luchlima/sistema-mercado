@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.math.BigDecimal;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MercadoApplicationTests {
 	@Autowired
@@ -13,7 +15,7 @@ class MercadoApplicationTests {
 
 	@Test
 	void testCreateMercadoSucess() {
-		var mercado = new Mercado("Arroz", 2.99, 3);
+		Mercado mercado = new Mercado("Arroz", BigDecimal.valueOf(10.0), 5);
 
 		webTestClient
 				.post()
@@ -35,7 +37,7 @@ class MercadoApplicationTests {
 				.post()
 				.uri("/mercado")
 				.bodyValue(
-						new Mercado("", 0, 0)
+						new Mercado("", BigDecimal.valueOf(0), 0)
 				).exchange()
 				.expectStatus().isBadRequest();
 	}
