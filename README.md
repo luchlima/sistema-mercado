@@ -4,6 +4,9 @@
 
 API para cadastro de itens em um mercado (CRUD).
 
+Link com videos:
+https://www.linkedin.com/feed/update/urn:li:activity:7331771888668512256/
+
 ## Tecnologias
 
 - [Spring Boot](https://spring.io/projects/spring-boot)
