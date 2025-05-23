@@ -2,62 +2,60 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastrar Produto</title>
+    <title>Gerenciamento de Produtos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #74ebd5, #acb6e5);
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            padding: 50px;
+            gap: 40px; /* Espaço entre os dois blocos */
+            box-sizing: border-box;
+            min-height: 100vh;
             margin: 0;
         }
 
         .container {
-            background-color: white;
+            width: 300px;
             padding: 30px;
+            background-color: white;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 320px;
         }
 
         h2 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
         }
 
         label {
-            display: block;
-            margin-top: 15px;
-            color: #555;
+            margin-top: 10px;
             font-weight: bold;
+            color: #555;
+            display: block;
         }
 
-        input[type="text"], input[type="number"] {
+        input {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
             border-radius: 6px;
             border: 1px solid #ccc;
             box-sizing: border-box;
-            transition: border 0.3s ease;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus {
-            border-color: #74ebd5;
-            outline: none;
         }
 
         button {
-            margin-top: 20px;
+            margin-top: 10px;
             width: 100%;
             padding: 12px;
             background-color: #74ebd5;
             border: none;
             border-radius: 6px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             transition: background 0.3s ease;
         }
@@ -67,37 +65,98 @@
         }
 
         #mensagem {
-            margin-top: 15px;
+            margin-top: 10px;
             text-align: center;
             font-weight: bold;
             color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .lista-container {
+            width: 300px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            display: none; /* lista começa invisível */
+        }
+
+        #lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .item-card:hover {
+            transform: scale(1.02);
         }
     </style>
 </head>
 <body>
 
+<!-- Container do formulário -->
 <div class="container">
-    <h2>Cadastrar Produto</h2>
-    <form id="produto-form">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" required>
+    <h2>Gerenciar Produtos</h2>
 
-        <label for="preco">Preço:</label>
-        <input type="number" id="preco" step="0.01" required>
+    <label for="id">ID:</label>
+    <input type="number" id="id">
 
-        <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" required>
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome">
 
-        <button type="submit">Cadastrar</button>
-    </form>
+    <label for="preco">Preço:</label>
+    <input type="number" id="preco" step="0.01">
 
-    <div id="mensagem"></div>
+    <label for="quantidade">Quantidade:</label>
+    <input type="number" id="quantidade">
+
+    <button onclick="cadastrar()">Cadastrar</button>
+    <button onclick="editar()">Editar</button>
+    <button onclick="deletar()">Deletar</button>
+    <button onclick="listar()">Listar Produtos</button>
+
+    <div id="mensagem" class="hidden"></div>
+</div>
+
+<!-- Container da lista, separado -->
+<div class="lista-container">
+    <h2>Produtos</h2>
+    <ul id="lista"></ul>
 </div>
 
 <script>
-    document.getElementById('produto-form').addEventListener('submit', function (e) {
-        e.preventDefault();
+    function mostrarMensagem(texto) {
+        const msg = document.getElementById('mensagem');
+        msg.textContent = texto;
+        msg.classList.remove('hidden');
 
+        setTimeout(() => {
+            msg.textContent = '';
+            msg.classList.add('hidden');
+        }, 3000);
+    }
+
+    function limparCampos() {
+        document.getElementById('id').value = '';
+        document.getElementById('nome').value = '';
+        document.getElementById('preco').value = '';
+        document.getElementById('quantidade').value = '';
+    }
+
+    function cadastrar() {
         const data = {
             nome: document.getElementById('nome').value,
             preco: parseFloat(document.getElementById('preco').value),
@@ -106,28 +165,79 @@
 
         fetch('/mercado', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (response.ok) {
-                document.getElementById('mensagem').textContent = 'Produto cadastrado com sucesso!';
-                // ✅ Limpar os campos
-                document.getElementById('nome').value = '';
-                document.getElementById('preco').value = '';
-                document.getElementById('quantidade').value = '';
+        .then(resp => {
+            if (resp.ok) {
+                mostrarMensagem('Produto cadastrado!');
+                limparCampos();
+                listar();
             } else {
-                return response.json().then(err => {
-                    document.getElementById('mensagem').textContent = 'Erro: ' + JSON.stringify(err);
-                });
+                mostrarMensagem('Erro ao cadastrar!');
             }
-        })
-        .catch(error => {
-            document.getElementById('mensagem').textContent = 'Erro de conexão.';
         });
-    });
+    }
+
+    function editar() {
+        const data = {
+            id: parseInt(document.getElementById('id').value),
+            nome: document.getElementById('nome').value,
+            preco: parseFloat(document.getElementById('preco').value),
+            quantidade: parseInt(document.getElementById('quantidade').value)
+        };
+
+        fetch('/mercado', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        })
+        .then(resp => {
+            if (resp.ok) {
+                mostrarMensagem('Produto atualizado!');
+                limparCampos();
+                listar();
+            } else {
+                mostrarMensagem('Erro ao atualizar!');
+            }
+        });
+    }
+
+    function deletar() {
+        const id = parseInt(document.getElementById('id').value);
+
+        fetch('/mercado/' + id, {
+            method: 'DELETE'
+        })
+        .then(resp => {
+            if (resp.ok) {
+                mostrarMensagem('Produto deletado!');
+                limparCampos();
+                listar();
+            } else {
+                mostrarMensagem('Erro ao deletar!');
+            }
+        });
+    }
+
+    function listar() {
+        const listaContainer = document.querySelector('.lista-container');
+        listaContainer.style.display = 'block';  // mostra o container da lista
+
+        fetch('/mercado')
+            .then(resp => resp.json())
+            .then(data => {
+                const lista = document.getElementById('lista');
+                lista.innerHTML = '';
+
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'item-card';
+                    li.textContent = `ID: ${item.id} | Nome: ${item.nome} | Preço: ${item.preco} | Qtd: ${item.quantidade}`;
+                    lista.appendChild(li);
+                });
+            });
+    }
 </script>
 
 </body>
